@@ -25,11 +25,25 @@ extension Client {
         }
 
         let targetUrl = url
-        if let requestProxy = config.requestProxy {
+        if let requestProxy = config.requestProxy,
+           var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+            
             guard let proxyUrl = URL(string: requestProxy) else {
                 throw FalError.invalidUrl(url: requestProxy)
             }
-            url = proxyUrl
+            
+            // Keep original path components and append them to proxy URL
+            let originalPath = urlComponents.path
+            let proxyPath = proxyUrl.path.hasSuffix("/") ? proxyUrl.path : proxyUrl.path + "/"
+            
+            urlComponents = URLComponents(url: proxyUrl, resolvingAgainstBaseURL: false)!
+            urlComponents.path = proxyPath + originalPath.dropFirst() // Drop leading slash
+            
+            guard let newUrl = urlComponents.url else {
+                throw FalError.invalidUrl(url: requestProxy)
+            }
+            
+            url = newUrl
         }
 
         var request = URLRequest(url: url)
