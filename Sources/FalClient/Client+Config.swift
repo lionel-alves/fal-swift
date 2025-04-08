@@ -33,7 +33,7 @@ public struct ClientConfig {
     public let credentials: ClientCredentials
     public let requestProxy: String?
 
-    init(credentials: ClientCredentials = .fromEnv, requestProxy: String? = nil) {
+    public init(credentials: ClientCredentials = .fromEnv, requestProxy: String? = nil) {
         self.credentials = credentials
         self.requestProxy = requestProxy
     }
