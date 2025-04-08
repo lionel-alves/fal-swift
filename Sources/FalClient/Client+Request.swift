@@ -25,6 +25,7 @@ extension Client {
         }
 
         let targetUrl = url
+
         if let requestProxy = config.requestProxy,
            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
             
