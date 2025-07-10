@@ -39,9 +39,15 @@ extension Client {
         request.setValue(userAgent, forHTTPHeaderField: "user-agent")
 
         // setup credentials if available
-        let credentials = config.credentials.description
-        if !credentials.isEmpty {
-            request.setValue("Key \(config.credentials.description)", forHTTPHeaderField: "authorization")
+
+        switch config.credentials {
+        case .bearer(let token):
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        default:
+            let credentials = config.credentials.description
+            if !credentials.isEmpty {
+                request.setValue("Key \(config.credentials.description)", forHTTPHeaderField: "authorization")
+            }
         }
 
         // setup the request proxy if available
