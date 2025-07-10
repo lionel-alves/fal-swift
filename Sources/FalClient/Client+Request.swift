@@ -14,37 +14,22 @@ extension Client {
             throw FalError.invalidUrl(url: urlString)
         }
 
-        let targetUrl = url
-        if let requestProxy = config.requestProxy {
-            guard let proxyUrl = URL(string: requestProxy),
-                  var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                  let proxyComponents = URLComponents(url: proxyUrl, resolvingAgainstBaseURL: false) else {
-                throw FalError.invalidUrl(url: requestProxy)
-            }
-            
-            components.scheme = proxyComponents.scheme
-            components.host = proxyComponents.host
-            components.port = proxyComponents.port
-            
-            // Ensure proper slash handling between paths
-            let proxyPath = proxyComponents.path.hasSuffix("/") ? proxyComponents.path : proxyComponents.path + "/"
-            let originalPath = components.path.hasPrefix("/") ? String(components.path.dropFirst()) : components.path
-            components.path = proxyPath + originalPath
-            
-            guard let newUrl = components.url else {
-                throw FalError.invalidUrl(url: requestProxy)
-            }
-            url = newUrl
-        }
-
         if let queryParams,
            !queryParams.isEmpty,
-           var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+           var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
         {
-            components.queryItems = queryParams.map {
+            urlComponents.queryItems = queryParams.map {
                 URLQueryItem(name: $0.key, value: String(describing: $0.value))
             }
-            url = components.url ?? url
+            url = urlComponents.url ?? url
+        }
+
+        let targetUrl = url
+        if let requestProxy = config.requestProxy {
+            guard let proxyUrl = URL(string: requestProxy) else {
+                throw FalError.invalidUrl(url: requestProxy)
+            }
+            url = proxyUrl
         }
 
         var request = URLRequest(url: url)
