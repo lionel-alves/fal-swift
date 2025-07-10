@@ -20,6 +20,8 @@ public enum ClientCredentials: CustomStringConvertible {
             return ""
         case let .custom(resolver):
             return resolver()
+        case .bearer(let token):
+            return token
         }
     }
 
@@ -27,6 +29,8 @@ public enum ClientCredentials: CustomStringConvertible {
     case key(id: String, secret: String)
     case fromEnv
     case custom(_ resolver: () -> String)
+    case bearer(token: String)
+
 }
 
 public struct ClientConfig {

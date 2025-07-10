@@ -76,8 +76,8 @@ public struct FalClient: Client {
 }
 
 public extension FalClient {
-    static func withProxy(_ url: String) -> Client {
-        FalClient(config: ClientConfig(requestProxy: url))
+    static func withProxy(_ url: String, _ credentials: ClientCredentials = .fromEnv) -> Client {
+        FalClient(config: ClientConfig(credentials: credentials, requestProxy: url))
     }
 
     static func withCredentials(_ credentials: ClientCredentials) -> Client {
